@@ -474,7 +474,8 @@ class App {
 
             if (
               !validInputs(distance, duration, elevationGain) ||
-              !allPositive(distance, duration)
+              !allPositive(distance, duration) ||
+              ''
             )
               return alert('Please check your input');
 
