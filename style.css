@@ -47,12 +47,13 @@ a:visited {
   padding: 3rem 5rem 4rem 5rem;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .logo {
   height: 5.2rem;
   align-self: center;
-  margin-bottom: 4rem;
+  margin-bottom: 6rem;
 }
 
 .workouts {
@@ -227,6 +228,7 @@ a:visited {
 .sort {
   width: 30px;
   height: 30px;
+  cursor: pointer;
 }
 
 .action {
@@ -235,8 +237,14 @@ a:visited {
 }
 
 .editing {
+  left: 198px;
+  top: 18px;
+  width: 15px;
   display: flex;
   align-items: center;
+
+  position: absolute;
+  cursor: pointer;
 }
 
 .label {
@@ -255,4 +263,28 @@ a:visited {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.message {
+  top: 100px;
+  position: absolute;
+}
+
+.hidden {
+  display: none;
+}
+
+.message__success {
+  color: var(--color-brand--2);
+  font-size: 18px;
+}
+
+.message__warning {
+  color: var(--color-brand--1);
+  font-size: 18px;
+}
+
+.message__error {
+  color: #dc2626;
+  font-size: 18px;
 }

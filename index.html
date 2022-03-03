@@ -35,6 +35,11 @@
     <div class="sidebar">
       <img src="logo.png" alt="Logo" class="logo" />
 
+      <div class="message">
+        <p class="message__success hidden">Workout, created successfully</p>
+        <p class="message__warning hidden">Please, add a positive number</p>
+        <p class="message__error hidden">Error</p>
+      </div>
       <ul class="workouts">
         <form class="form hidden">
           <div class="form__row">
@@ -146,7 +151,7 @@
         </li> -->
       </ul>
 
-      <div class="action">
+      <div class="action hidden">
         <div class="sorting">
           <select class="form__input form__input--type">
             <option value="distance">Distance</option>
@@ -164,7 +169,7 @@
             />
           </svg>
         </div>
-        <div>
+        <div class="reset">
           <svg
             class="clear"
             fill="#dc2626"
