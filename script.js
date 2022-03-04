@@ -90,6 +90,8 @@ class App {
   #mapEvent;
   #workouts = [];
 
+  final = ['workout'];
+
   constructor() {
     this._getPosition();
 
@@ -107,9 +109,6 @@ class App {
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     resetAll.addEventListener('click', this.reset);
-
-    //display action
-    this._handleWorkoutAction();
   }
 
   _getPosition() {
@@ -362,154 +361,233 @@ class App {
     this.#workouts.forEach(work => this._renderWorkout(work));
   }
 
-  _displayWorkoutInput(workout) {
-    inputType.value = workout.type;
-    inputDistance.value = workout.distance;
-    inputDuration.value = workout.duration;
-    workout.type === 'running'
-      ? (inputCadence.value = workout.cadence)
-      : (inputElevation.value = workout.elevationGain);
-  }
-
-  _getKey(e) {
-    return e.target.closest('.workout').dataset.id;
-  }
-
   _deleteSingleWorkout() {
-    document.querySelectorAll('.deleting').forEach(workout =>
-      workout.addEventListener('click', e => {
-        // console.log(this._getKey(e));
-
-        const data = JSON.parse(localStorage.getItem('workouts')).filter(
-          w => w.id !== this._getKey(e)
-        );
-
-        localStorage.setItem('workouts', JSON.stringify(data));
-        location.reload();
-      })
-    );
+    // document.querySelectorAll('.deleting').forEach(workout =>
+    //   workout.addEventListener('click', e => {
+    //     // console.log(this._getKey(e));
+    //     const data = JSON.parse(localStorage.getItem('workouts')).filter(
+    //       w => w.id !== this._getKey(e)
+    //     );
+    //     localStorage.setItem('workouts', JSON.stringify(data));
+    //   })
+    // );
   }
 
   _updateWorkout() {
-    document.querySelectorAll('.editing').forEach(workout =>
-      workout.addEventListener('click', e => {
-        const data = JSON.parse(localStorage.getItem('workouts'));
-        const key = this._getKey(e);
+    containerWorkouts.addEventListener('click', function (e) {
+      const edit = e.target.closest('.editing');
+      const data = JSON.parse(localStorage.getItem('workouts'));
 
-        const workout = data.find(wk => wk.id === this._getKey(e));
+      const validInput = (...inputs) =>
+        inputs.every(input => Number.isFinite(input));
+      const checkPositive = (...inputs) => inputs.every(input => input > 0);
 
-        const validInputs = (...inputs) =>
-          inputs.every(inp => Number.isFinite(inp));
+      const updateForm = `
+        <form class="update">
+          <div class="form__row">
+            <label class="form__label">Type</label>
+            <select class="update__input update__input--type">
+              <option value="running">Running</option>
+              <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label">Distance</label>
+            <input class="update__input update__input--distance" placeholder="km" />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Duration</label>
+            <input
+              class="update__input update__input--duration"
+              placeholder="min"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Cadence</label>
+            <input
+              class="update__input update__input--cadence"
+              placeholder="step/min"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Elev Gain</label>
+            <input
+              class="update__input update__input--elevation"
+              placeholder="meters"
+            />
+          </div>
+          <button class="form__btn">OK</button>
+        </form>
+      `;
 
-        const allPositive = (...inputs) => inputs.every(inp => inp > 0);
+      if (!edit) return;
+      const key = edit.closest('.workout').dataset.id;
 
-        if (!workout) return;
+      if (!key) return;
 
-        if (workout.type === 'running') {
-          this._showForm();
+      const element = data.find(workout => workout.id === key);
 
-          inputElevation
-            .closest('.form__row')
-            .classList.add('form__row--hidden');
-          inputCadence
-            .closest('.form__row')
-            .classList.remove('form__row--hidden');
+      const list = document.querySelector('.workout');
+      list.insertAdjacentHTML('beforebegin', updateForm);
 
-          this._displayWorkoutInput(workout);
+      // UPDATED FORM
+      const save = document.querySelector('.update');
+      const upInputType = document.querySelector('.update__input--type');
+      const upInputDistance = document.querySelector(
+        '.update__input--distance'
+      );
+      const upInputDuration = document.querySelector(
+        '.update__input--duration'
+      );
+      const upInputCadence = document.querySelector('.update__input--cadence');
+      const upInputElevation = document.querySelector(
+        '.update__input--elevation'
+      );
 
-          form.addEventListener('submit', e => {
-            e.preventDefault();
+      const initUpdateForm = wk => {
+        upInputType.value = wk.type;
 
-            const type = inputType.value;
-            const distance = +inputDistance.value;
-            const duration = +inputDuration.value;
-            const cadence = +inputCadence.value;
+        upInputDistance.value = wk.distance;
 
-            if (
-              !validInputs(distance, duration, cadence) ||
-              !allPositive(distance, duration, cadence)
-            )
-              return alert('Please check your input');
+        upInputDuration.value = wk.duration;
 
-            const initial = {
-              type,
-              cadence,
-              duration,
-              distance,
-              clicks: workout.clicks,
-              coords: workout.coords,
-              date: workout.date,
-              description: workout.description,
-              id: workout.id,
-              pace: duration / distance,
-            };
+        wk.type === 'running'
+          ? (upInputCadence.value = wk.cadence)
+          : (upInputElevation.value = wk.elevationGain);
+      };
 
-            localStorage.setItem(
-              'workouts',
-              JSON.stringify([initial, ...data?.filter(w => w.id !== key)])
-            );
+      const initialWorkoutData = wk => {
+        const upType = upInputType.value;
+        const upDistance = +upInputDistance.value;
+        const upDuration = +upInputDuration.value;
+        const upCadence = +upInputCadence.value;
+        const upElevation = +upInputElevation.value;
 
-            this._hideForm();
-            location.reload();
-          });
+        if (wk.type === 'running') {
+          if (
+            !validInput(upDistance, upDuration, upCadence) ||
+            !checkPositive(upDistance, upDuration, upCadence)
+          )
+            return alert('Chech your input');
+
+          return {
+            cadence: upCadence,
+            clicks: wk.clicks,
+            coords: wk.coords,
+            date: wk.date,
+            description: wk.description,
+            distance: upDistance,
+            duration: upDuration,
+            id: wk.id,
+            pace: upDuration / upDistance,
+            type: upType,
+          };
         }
 
-        if (workout.type === 'cycling') {
-          this._showForm();
+        if (wk.type === 'cycling') {
+          if (
+            !validInput(upDistance, upDuration, upCadence) ||
+            !checkPositive(upDistance, upDuration)
+          )
+            return alert('Chech your input');
 
-          inputElevation
-            .closest('.form__row')
-            .classList.remove('form__row--hidden');
-          inputCadence.closest('.form__row').classList.add('form__row--hidden');
-
-          this._displayWorkoutInput(workout);
-
-          form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            const type = inputType.value;
-            const distance = +inputDistance.value;
-            const duration = +inputDuration.value;
-            const elevationGain = +inputElevation.value;
-
-            if (
-              !validInputs(distance, duration, elevationGain) ||
-              !allPositive(distance, duration) ||
-              ''
-            )
-              return alert('Please check your input');
-
-            const initial = {
-              type,
-              elevationGain,
-              duration,
-              distance,
-              clicks: workout.clicks,
-              coords: workout.coords,
-              date: workout.date,
-              description: workout.description,
-              id: workout.id,
-              speed: distance / (duration / 60),
-            };
-
-            localStorage.setItem(
-              'workouts',
-              JSON.stringify([initial, ...data?.filter(w => w.id !== key)])
-            );
-
-            this._hideForm();
-            location.reload();
-          });
+          return {
+            elevationGain: upElevation,
+            clicks: wk.clicks,
+            coords: wk.coords,
+            date: wk.date,
+            description: wk.description,
+            distance: upDistance,
+            duration: upDuration,
+            id: wk.id,
+            speed: upDistance / (upDuration / 60),
+            type: upType,
+          };
         }
-      })
-    );
-  }
+      };
 
-  _handleWorkoutAction() {
-    const data = JSON.parse(localStorage.getItem('workouts'));
+      // ***** workout: running
+      if (element.type === 'running') {
+        // display input by workout type
+        upInputCadence
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        upInputElevation
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
 
-    if (data.length !== 0)
-      document.querySelector('.action').classList.remove('hidden');
+        // display item
+        initUpdateForm(element);
+
+        // Save the updating data
+        save.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const workout = initialWorkoutData(element);
+
+          if (!workout) return;
+
+          // Clear field
+          upInputCadence.value =
+            upInputDistance.value =
+            upInputDuration.value =
+            upInputElevation.value =
+              '';
+
+          // workout updated, send to localStorage
+          console.log(element);
+          console.log('Up running', workout);
+
+          const el = data.filter(w => w.id !== element.id);
+          localStorage.setItem('workouts', JSON.stringify([workout, ...el]));
+
+          //JSON.parse(localStorage.getItem('workouts'));
+
+          // hide form
+          save.style.display = 'none';
+          save.classList.add('hidden');
+        });
+      }
+
+      // ***** workout: cycling
+      if (element.type === 'cycling') {
+        // display input by workout type
+        upInputCadence.closest('.form__row').classList.add('form__row--hidden');
+
+        upInputElevation
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+
+        // display item
+        initUpdateForm(element);
+
+        // Save the updating data
+        save.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const workout = initialWorkoutData(element);
+          if (!workout) return;
+
+          // Clear field
+          upInputCadence.value =
+            upInputDistance.value =
+            upInputDuration.value =
+            upInputElevation.value =
+              '';
+
+          // workout updated, send to localStorage
+          console.log(element);
+          console.log('Up cycling', workout);
+
+          const el = data.filter(w => w.id !== element.id);
+          localStorage.setItem('workouts', JSON.stringify([workout, ...el]));
+
+          // hide form
+          save.style.display = 'none';
+          save.classList.add('hidden');
+        });
+      }
+    });
   }
 
   reset() {

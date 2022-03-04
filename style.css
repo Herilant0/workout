@@ -130,6 +130,21 @@ a:visited {
   transition: all 0.5s, transform 1ms;
 }
 
+.update {
+  background-color: var(--color-dark--2);
+  border-radius: 5px;
+  padding: 1.5rem 2.75rem;
+  margin-bottom: 1.75rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 2.5rem;
+
+  /* Match height and activity boxes */
+  height: 9.25rem;
+  transition: all 0.5s, transform 1ms;
+}
+
 .form.hidden {
   transform: translateY(-30rem);
   height: 0;
@@ -165,6 +180,22 @@ a:visited {
 }
 
 .form__input:focus {
+  outline: none;
+  background-color: #fff;
+}
+
+.update__input {
+  width: 100%;
+  padding: 0.3rem 1.1rem;
+  font-family: inherit;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 3px;
+  background-color: var(--color-light--3);
+  transition: all 0.2s;
+}
+
+.update__input:focus {
   outline: none;
   background-color: #fff;
 }
