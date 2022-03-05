@@ -255,14 +255,13 @@ a:visited {
 /* SVG styling */
 .edit,
 .delete,
-.clear,
-.sort {
+.clear {
   width: 30px;
   height: 30px;
   cursor: pointer;
 }
 
-.action {
+.movement {
   display: flex;
   justify-content: space-between;
 }
