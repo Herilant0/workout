@@ -490,33 +490,28 @@ class App {
   };
 
   _getSingleWorkout() {
-    const pen = document.querySelectorAll('.editing');
+    containerWorkouts.addEventListener('click', e => {
+      if (!e.target.closest('.editing')) return;
+      const key = e.target.closest('.workout').dataset.id;
+      if (!key) return;
+      // updateForm.classList.remove('hidden');
+      form.classList.remove('hidden');
+      form.setAttribute('data-updated', 'ready');
+      const data = JSON.parse(localStorage.getItem('workouts'));
+      const workout = data.find(w => w.id === key);
 
-    pen.forEach(edit => {
-      edit.addEventListener('click', e => {
-        const data = JSON.parse(localStorage.getItem('workouts'));
-        const key = e.target.closest('.workout').dataset.id;
+      // initialize data from input by corresponding workout
+      this._initUpdateForm(workout);
 
-        if (!key) return;
-        // updateForm.classList.remove('hidden');
-        form.classList.remove('hidden');
-        form.setAttribute('data-updated', 'ready');
+      if (!form.hasAttribute('data-updated')) return;
 
-        const workout = data.find(w => w.id === key);
+      if (workout.type === 'running') {
+        this._updatedWorkout(workout);
+      }
 
-        // initialize data from input by corresponding workout
-        this._initUpdateForm(workout);
-
-        if (!form.hasAttribute('data-updated')) return;
-
-        if (workout.type === 'running') {
-          this._updatedWorkout(workout);
-        }
-
-        if (workout.type === 'cycling') {
-          this._updatedWorkout(workout);
-        }
-      });
+      if (workout.type === 'cycling') {
+        this._updatedWorkout(workout);
+      }
     });
   }
 
