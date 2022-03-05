@@ -81,6 +81,7 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const resetAll = document.querySelector('.reset');
+const handleMovement = document.querySelector('.movement');
 
 class App {
   #map;
@@ -100,7 +101,6 @@ class App {
     // delete single workout
     this._deleteSingleWorkout();
 
-    console.log();
     // Attach event handler
     // form.addEventListener('submit', this._newWorkout.bind(this));
 
@@ -112,11 +112,9 @@ class App {
 
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
-    resetAll.addEventListener('click', this.reset);
 
-    // updateForm.addEventListener('submit', () => {
-    //   console.log('workout updated');
-    // });
+    // Delete all workouts
+    resetAll.addEventListener('click', this.reset);
   }
 
   _getPosition() {
@@ -516,8 +514,10 @@ class App {
   }
 
   reset() {
-    localStorage.removeItem('workouts');
-    location.reload(); // reload the page;
+    if (confirm('Delete all workouts')) {
+      localStorage.removeItem('workouts');
+      location.reload(); // reload the page;
+    }
   }
 }
 
