@@ -408,21 +408,22 @@ class App {
   }
 
   _deleteSingleWorkout() {
-    document.querySelectorAll('.deleting').forEach(del => {
-      del.addEventListener('click', function (e) {
-        e.preventDefault();
+    containerWorkouts.addEventListener('click', e => {
+      if (!e.target.closest('.deleting')) return;
+      const key = e.target.closest('.workout').dataset.id;
 
-        const data = JSON.parse(localStorage.getItem('workouts'));
-        const key = e.target.closest('.workout').dataset.id;
+      if (!key) return;
+      console.log(key);
 
-        if (!key) return;
-        if (confirm('Are you sure to delete this workout')) {
-          const workoutRemoved = data.filter(work => work.id !== key);
+      this.workouts = this.workouts.filter(w => w.id !== key);
+      containerWorkouts.innerHTML = '';
 
-          localStorage.setItem('workouts', JSON.stringify(workoutRemoved));
-          location.reload();
-        }
-      });
+      // update ui
+      console.log(this.workouts);
+      this.workouts.forEach(workout => this._updateUI(workout));
+
+      // set to localStorage
+      this._setLocalStorage();
     });
   }
 
@@ -433,8 +434,7 @@ class App {
       if (!updatedWorkout) return;
 
       // updated workout
-      console.log('updated', updatedWorkout);
-
+      // console.log('updated', updatedWorkout);
       this.workouts = this.workouts.filter(w => w.id !== workout.id);
       this.workouts.push(updatedWorkout);
 
