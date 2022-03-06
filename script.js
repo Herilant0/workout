@@ -135,9 +135,7 @@ class App {
         .sort((a, b) => b.distance - a.distance);
 
       // update UI
-      sortByDistance.forEach(workout =>
-        containerWorkouts.insertAdjacentHTML('afterbegin', this._useUI(workout))
-      );
+      sortByDistance.forEach(workout => this._updateUI(workout));
     }
 
     if (sortType === 'duration') {
@@ -146,10 +144,12 @@ class App {
         .sort((a, b) => b.duration - a.duration);
 
       // update UI
-      sortByDuration.forEach(workout =>
-        containerWorkouts.insertAdjacentHTML('afterbegin', this._useUI(workout))
-      );
+      sortByDuration.forEach(workout => this._updateUI(workout));
     }
+  }
+
+  _updateUI(workout) {
+    containerWorkouts.insertAdjacentHTML('afterbegin', this._useUI(workout));
   }
 
   _useUI(workout) {
@@ -341,7 +341,8 @@ class App {
     this._renderWorkoutMarker(workout);
 
     // render workout on list
-    this._renderWorkout(workout);
+    // this._renderWorkout(workout);
+    this._updateUI(workout);
 
     // hide form + clear input field
     this._hideForm();
@@ -368,86 +369,9 @@ class App {
       .openPopup();
   }
 
-  _renderWorkout(workout) {
-    let html = `
-    <li class="workout workout--${workout.type}" data-id="${workout.id}">
-      <h2 class="workout__title">${workout.description}</h2>
-      <div class="workout__details">
-        <span class="workout__icon">${
-          workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'
-        }</span>
-        <span class="workout__value">${workout.distance}</span>
-        <span class="workout__unit">km</span>
-      </div>
-      <div class="workout__details">
-        <span class="workout__icon">⏱</span>
-        <span class="workout__value">${workout.duration}</span>
-        <span class="workout__unit">min</span>
-      </div>
-      `;
-
-    if (workout.type === 'running')
-      html += `
-        <div class="workout__details">
-            <span class="workout__icon">⚡️</span>
-            <span class="workout__value">${workout.pace.toFixed(1)}</span>
-            <span class="workout__unit">min/km</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">🦶🏼</span>
-            <span class="workout__value">${workout.cadence}</span>
-            <span class="workout__unit">spm</span>
-          </div>
-          <div class="editing">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
-          </div>
-          <div class="deleting">
-            <svg
-              class="delete"
-              fill="#ef4444"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 576 512"
-            >
-              <path
-                d="M576 384C576 419.3 547.3 448 512 448H205.3C188.3 448 172 441.3 160 429.3L9.372 278.6C3.371 272.6 0 264.5 0 256C0 247.5 3.372 239.4 9.372 233.4L160 82.75C172 70.74 188.3 64 205.3 64H512C547.3 64 576 92.65 576 128V384zM271 208.1L318.1 256L271 303C261.7 312.4 261.7 327.6 271 336.1C280.4 346.3 295.6 346.3 304.1 336.1L352 289.9L399 336.1C408.4 346.3 423.6 346.3 432.1 336.1C442.3 327.6 442.3 312.4 432.1 303L385.9 256L432.1 208.1C442.3 199.6 442.3 184.4 432.1 175C423.6 165.7 408.4 165.7 399 175L352 222.1L304.1 175C295.6 165.7 280.4 165.7 271 175C261.7 184.4 261.7 199.6 271 208.1V208.1z"
-              />
-            </svg>
-          </div>
-        </li>
-        `;
-
-    if (workout.type === 'cycling')
-      html += `
-        <div class="workout__details">
-            <span class="workout__icon">⚡️</span>
-            <span class="workout__value">${workout.speed.toFixed(1)}</span>
-            <span class="workout__unit">km/h</span>
-          </div>
-          <div class="workout__details">
-            <span class="workout__icon">⛰</span>
-            <span class="workout__value">${workout.elevationGain}</span>
-            <span class="workout__unit">m</span>
-          </div>
-          <div class="editing">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32zM421.7 220.3L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3z"/></svg>
-          </div>
-          <div class="deleting">
-            <svg
-              class="delete"
-              fill="#ef4444"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 576 512"
-            >
-              <path
-                d="M576 384C576 419.3 547.3 448 512 448H205.3C188.3 448 172 441.3 160 429.3L9.372 278.6C3.371 272.6 0 264.5 0 256C0 247.5 3.372 239.4 9.372 233.4L160 82.75C172 70.74 188.3 64 205.3 64H512C547.3 64 576 92.65 576 128V384zM271 208.1L318.1 256L271 303C261.7 312.4 261.7 327.6 271 336.1C280.4 346.3 295.6 346.3 304.1 336.1L352 289.9L399 336.1C408.4 346.3 423.6 346.3 432.1 336.1C442.3 327.6 442.3 312.4 432.1 303L385.9 256L432.1 208.1C442.3 199.6 442.3 184.4 432.1 175C423.6 165.7 408.4 165.7 399 175L352 222.1L304.1 175C295.6 165.7 280.4 165.7 271 175C261.7 184.4 261.7 199.6 271 208.1V208.1z"
-              />
-            </svg>
-          </div>
-        </li>
-        `;
-
-    form.insertAdjacentHTML('afterend', html);
-  }
+  // _renderWorkout(workout) {
+  //   this._updateUI(workout);
+  // }
 
   _moveToPopup(e) {
     const workoutEl = e.target.closest('.workout');
@@ -480,7 +404,7 @@ class App {
     if (!data) return;
 
     this.workouts = data;
-    this.workouts.forEach(work => this._renderWorkout(work));
+    this.workouts.forEach(work => this._updateUI(work));
   }
 
   _deleteSingleWorkout() {
@@ -503,7 +427,7 @@ class App {
   }
 
   _updatedWorkout(workout) {
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', e => {
       const updatedWorkout = this._initialWorkoutData(workout);
 
       if (!updatedWorkout) return;
@@ -512,10 +436,11 @@ class App {
       console.log('updated', updatedWorkout);
 
       this.workouts = this.workouts.filter(w => w.id !== workout.id);
-
       this.workouts.push(updatedWorkout);
 
-      this._renderWorkout(updatedWorkout); //render workout updated
+      //render workout updated
+      containerWorkouts.innerHTML = '';
+      this.workouts.forEach(wk => this._updateUI(wk));
 
       // send to localStorage
       this._setLocalStorage();
@@ -523,11 +448,10 @@ class App {
       // hide form & delete attributes
       form.removeAttribute('data-updated');
       this._hideForm();
-
-      // location.reload();
     });
   }
 
+  // initialize workout to form
   _initUpdateForm = wk => {
     inputType.value = wk.type;
     inputDistance.value = wk.distance;
@@ -552,6 +476,7 @@ class App {
     }
   };
 
+  // initial data workout after updating
   _initialWorkoutData = wk => {
     const upType = inputType.value;
     const upDistance = +inputDistance.value;
@@ -610,26 +535,25 @@ class App {
   _getSingleWorkout() {
     containerWorkouts.addEventListener('click', e => {
       if (!e.target.closest('.editing')) return;
+
       const key = e.target.closest('.workout').dataset.id;
+
       if (!key) return;
       // updateForm.classList.remove('hidden');
       form.classList.remove('hidden');
       form.setAttribute('data-updated', 'ready');
-      const data = JSON.parse(localStorage.getItem('workouts'));
-      const workout = data.find(w => w.id === key);
+
+      // const data = JSON.parse(localStorage.getItem('workouts'));
+      const workout = this.workouts.find(w => w.id === key);
+      // console.log(workout);
 
       // initialize data from input by corresponding workout
       this._initUpdateForm(workout);
 
       if (!form.hasAttribute('data-updated')) return;
 
-      if (workout.type === 'running') {
-        this._updatedWorkout(workout);
-      }
-
-      if (workout.type === 'cycling') {
-        this._updatedWorkout(workout);
-      }
+      // save updated form
+      this._updatedWorkout(workout);
     });
   }
 
