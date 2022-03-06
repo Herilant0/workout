@@ -87,7 +87,7 @@ class App {
   #map;
   #zoomLevel = 13;
   #mapEvent;
-  #workouts = [];
+  workouts = [];
 
   constructor() {
     this._getPosition();
@@ -148,7 +148,7 @@ class App {
 
     // handling click on map
     this.#map.on('click', this._showForm.bind(this));
-    this.#workouts.forEach(work => this._renderWorkoutMarker(work)); // when map is load add marker
+    this.workouts.forEach(work => this._renderWorkoutMarker(work)); // when map is load add marker
   }
 
   _showForm(mapE) {
@@ -218,7 +218,7 @@ class App {
     }
 
     // add new  object to workout
-    this.#workouts.push(workout);
+    this.workouts.push(workout);
     // console.log(workout);
 
     // render workout in map as marker
@@ -338,7 +338,7 @@ class App {
 
     if (!workoutEl) return;
 
-    const workout = this.#workouts.find(
+    const workout = this.workouts.find(
       work => work.id === workoutEl.dataset.id
     );
 
@@ -355,7 +355,7 @@ class App {
   }
 
   _setLocalStorage() {
-    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+    localStorage.setItem('workouts', JSON.stringify(this.workouts));
   }
 
   _getLocalStorage() {
@@ -363,8 +363,8 @@ class App {
 
     if (!data) return;
 
-    this.#workouts = data;
-    this.#workouts.forEach(work => this._renderWorkout(work));
+    this.workouts = data;
+    this.workouts.forEach(work => this._renderWorkout(work));
   }
 
   _deleteSingleWorkout() {
@@ -394,8 +394,12 @@ class App {
 
       // updated workout
       console.log('updated', updatedWorkout);
-      this.#workouts = this.#workouts.filter(w => w.id !== workout.id);
-      this.#workouts.push(updatedWorkout);
+
+      this.workouts = this.workouts.filter(w => w.id !== workout.id);
+
+      this.workouts.push(updatedWorkout);
+
+      this._renderWorkout(updatedWorkout); //render workout updated
 
       // send to localStorage
       this._setLocalStorage();
@@ -404,7 +408,7 @@ class App {
       form.removeAttribute('data-updated');
       this._hideForm();
 
-      location.reload();
+      // location.reload();
     });
   }
 
@@ -519,7 +523,86 @@ class App {
       location.reload(); // reload the page;
     }
   }
+
+  takeWorkout() {
+    return localStorage.getItem('workouts');
+  }
 }
 
 const app = new App();
 // console.log(app.__proto__);
+
+const fakeWorkouts = [
+  {
+    date: '2022-03-06T08:09:54.860Z',
+    id: '6554194860',
+    clicks: 0,
+    coords: [-18.85219849074212, 47.52994537353516],
+    distance: 2,
+    duration: 12,
+    type: 'running',
+    cadence: 32,
+    pace: 6,
+    description: 'Running on March 6',
+  },
+  {
+    date: '2022-03-06T08:10:09.539Z',
+    id: '6554209539',
+    clicks: 0,
+    coords: [-18.869255151707524, 47.534751892089844],
+    distance: 5,
+    duration: 25,
+    type: 'cycling',
+    elevationGain: 32,
+    speed: 12,
+    description: 'Cycling on March 6',
+  },
+  {
+    date: '2022-03-06T08:10:24.589Z',
+    id: '6554224589',
+    clicks: 0,
+    coords: [-18.861458036213758, 47.485485076904304],
+    distance: 5,
+    duration: 60,
+    type: 'cycling',
+    elevationGain: 15,
+    speed: 5,
+    description: 'Cycling on March 6',
+  },
+  {
+    date: '2022-03-06T08:10:36.659Z',
+    id: '6554236659',
+    clicks: 0,
+    coords: [-18.88728459215798, 47.478446960449226],
+    distance: 3,
+    duration: 50,
+    type: 'running',
+    cadence: 15,
+    pace: 16.666666666666668,
+    description: 'Running on March 6',
+  },
+  {
+    date: '2022-03-06T08:10:48.322Z',
+    id: '6554248322',
+    clicks: 0,
+    coords: [-18.906286495910905, 47.541099702274224],
+    distance: 5,
+    duration: 120,
+    type: 'running',
+    cadence: 15,
+    pace: 24,
+    description: 'Running on March 6',
+  },
+  {
+    date: '2022-03-06T08:11:04.504Z',
+    id: '6554264504',
+    clicks: 0,
+    coords: [-18.8197048120737, 47.56031979941022],
+    distance: 1,
+    duration: 25,
+    type: 'running',
+    cadence: 15,
+    pace: 25,
+    description: 'Running on March 6',
+  },
+];
