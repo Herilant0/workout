@@ -264,6 +264,8 @@ a:visited {
 .movement {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
 }
 
 .editing {
@@ -292,7 +294,6 @@ a:visited {
   width: 200px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
 }
 
 .message {
